@@ -1,0 +1,39 @@
+parameters:
+
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: true
+
+  # Commands
+  App\Commands\CommissionsCommand:
+    public: true
+    arguments:
+      $bin_list_client: '@App\Contracts\IBinListClient'
+      $exchange_rate_client: '@App\Contracts\IExchangeRateClient'
+      $exchange_service: '@App\Contracts\IExchangeService'
+      $commission_service: '@App\Contracts\ICommissionService'
+
+  # Services
+  App\Services\BinListClient:
+    arguments: [ '@App\Services\CurlHttpClient' ]
+  App\Contracts\IBinListClient: '@App\Services\BinListClient'
+
+  # CommissionService
+  App\Services\CommissionService: ~
+  App\Contracts\ICommissionService: '@App\Services\CommissionService'
+
+  App\Services\CurlHttpClient: ~
+  App\Contracts\IHttpClient: '@App\Services\CurlHttpClient'
+
+  # ExchangeRateClient
+  App\Services\ExchangeRateClient:
+    arguments:
+      $http_client: '@App\Services\CurlHttpClient'
+      $api_key: ''
+  App\Contracts\IExchangeRateClient: '@App\Services\ExchangeRateClient'
+
+  # ExchangeService
+  App\Services\ExchangeService: ~
+  App\Contracts\IExchangeService: '@App\Services\ExchangeService'

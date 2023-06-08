@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\App\Services\BinListClient\Get;
+
+use Mockery as m;
+use Mockery\MockInterface;
+use App\Contracts\Http\IHttpClient;
+use App\Contracts\Http\IHttpResponse;
+
+trait BinListClientTrait
+{
+    public function mockHttpClientWithValidResponse(): IHttpClient|MockInterface
+    {
+        $mock = m::mock(IHttpClient::class);
+
+        $response_mock = $this->mockResponseInterface([
+            'country' => [
+                'name' => 'Poland',
+                'alpha2' => 'PL',
+            ],
+        ]);
+
+        $mock->allows('get')->once()->andReturn($response_mock);
+
+        return $mock;
+    }
+
+    public function mockHttpClientWithNotFoundResponse(): IHttpClient|MockInterface
+    {
+        $mock = m::mock(IHttpClient::class);
+
+        $response_mock = $this->mockResponseInterface([], 404);
+
+        $mock->allows('get')->once()->andReturn($response_mock);
+
+        return $mock;
+    }
+
+    public function mockResponseInterface(
+        array $data = [],
+        int $http_code = 200,
+    ): IHttpResponse|MockInterface {
+        $mock = m::mock(IHttpResponse::class);
+
+        $mock->allows('getData')->andReturn($data);
+        $mock->allows('getHttpCode')->andReturn($http_code);
+
+        return $mock;
+    }
+}
